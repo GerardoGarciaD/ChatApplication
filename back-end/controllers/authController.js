@@ -43,9 +43,7 @@ exports.register = async (req, res) => {
 };
 
 const generateToken = (user) => {
-  console.log(user);
-
-  // se quita el campo password de la respuesta
+  // se quita (oculta) el campo password de la respuesta
   delete user.password;
 
   const token = jwt.sign(user, config.appKey, { expiresIn: 86400 });
