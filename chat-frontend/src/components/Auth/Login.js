@@ -1,23 +1,24 @@
 import React from "react";
 import loginImage from "../../assets/images/login.svg";
+import "./Auth.scss";
 
 const Login = () => {
   return (
     <div id="auth-container">
       <div id="auth-card">
-        <div>
+        <div className="card-shadow">
           <div id="image-section">
             <img src={loginImage} alt="Login" />
           </div>
           <div id="form-section">
-            <h2>Welcomme back</h2>
+            <h2>Welcome back</h2>
 
             <form>
-              <div className="input-field">
-                <input type="Wmail" />
+              <div className="input-field mb-1">
+                <input type="email" placeholder="Email" />
               </div>
-              <div className="input-field">
-                <input type="Password" />
+              <div className="input-field mb-2">
+                <input type="password" placeholder="Password" />
               </div>
 
               <button>Login</button>
