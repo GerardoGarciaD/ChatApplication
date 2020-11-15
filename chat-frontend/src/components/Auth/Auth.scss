@@ -39,7 +39,8 @@
         padding: 20px;
 
         .input-field {
-          input {
+          input,
+          select {
             height: 40px;
             width: 100%;
             box-sizing: border-box;
