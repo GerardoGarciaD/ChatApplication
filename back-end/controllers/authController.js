@@ -2,6 +2,8 @@
 const User = require("../models").User;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+// Se obtiene el modulo que regresa los valores del environment
+const config = require("../config/app");
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -27,8 +29,6 @@ exports.login = async (req, res) => {
   } catch (e) {
     return res.status(500).json({ message: e.message });
   }
-
-  return res.send([email, password]);
 };
 
 exports.register = async (req, res) => {};
@@ -39,7 +39,7 @@ const generateToken = (user) => {
   // se quita el campo password de la respuesta
   delete user.password;
 
-  const token = jwt.sign(user, "secret", { expiresIn: 86400 });
+  const token = jwt.sign(user, config.appKey, { expiresIn: 86400 });
 
   return { ...user, token };
 };
