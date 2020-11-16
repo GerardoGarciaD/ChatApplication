@@ -1,7 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 const Chat = () => {
-  return <div>Chat Screen</div>;
+  const user = useSelector((state) => state.authReducer.user);
+  return (
+    <div>
+      Chat Screen
+      <p>Welcome, {user.firstName}</p>
+    </div>
+  );
 };
 
 export default Chat;
