@@ -1,9 +1,11 @@
 import { LOGIN, LOGOUT, REGISTER } from "../actions/auth";
 
 const initialState = {
-  user: {},
-  token: "",
-  isLoggedIn: false,
+  user: JSON.parse(localStorage.getItem("user")) || {},
+  token: localStorage.getItem("token") || "",
+  // La doble exlamación (!!) se utiliza, ya que si en local storage no se encuentra el user, entonces va devolver false
+  // isLoggedIn: localStorage.getItem("user") ? true: false
+  isLoggedIn: !!localStorage.getItem("user"),
 };
 
 const authReducer = (state = initialState, action) => {
@@ -14,7 +16,7 @@ const authReducer = (state = initialState, action) => {
     case REGISTER:
       return {
         ...state,
-        user: payload,
+        user: payload.user,
         token: payload.token,
         isLoggedIn: true,
       };
