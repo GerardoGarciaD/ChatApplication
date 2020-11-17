@@ -1,5 +1,6 @@
 "use strict";
 const bcrypt = require("bcrypt");
+const config = require("../config/app");
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -19,7 +20,19 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       gender: DataTypes.STRING,
-      avatar: DataTypes.STRING,
+      avatar: {
+        type: DataTypes.STRING,
+        get() {
+          // Con esto se obtiene el valor actual de avatar
+          const avatar = this.getDataValue("avatar");
+          const url = `${config.appUrl}:${config.appPort}`;
+
+          if (!avatar) {
+            // Se regresa la ruta en donde se encuentran las imagenes de avatar por default (public)
+            return `${url}/${this.getDataValue("gender")}.svg`;
+          }
+        },
+      },
     },
     {
       sequelize,
