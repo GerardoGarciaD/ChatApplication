@@ -9,9 +9,11 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
-
+// Este parser se utiliza para que el servidor pueda procesar imagenes al momento de hacer requests
 app.use(bodyParser.urlencoded({ extended: true }));
+// Este parser se utiliza para que el servidor pueda procesar Json al momento de hacer requests
 app.use(bodyParser.json());
+// Se añade la función para que se puedan realizar peticiones desde otros puertos, etc.
 app.use(cors());
 app.use(router);
 
