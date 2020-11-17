@@ -25,6 +25,9 @@ exports.login = async (req, res) => {
 
     //   Generar auth token, se añade la opcion de user.get y raw, para mandar un formato simplificado de la respuesta que se obtiene con el modelo de sequelize que pueda leer
     const userWithToken = generateToken(user.get({ raw: true }));
+
+    // El userWithToken esta formado por un formato plano, por lo que no puede ejecutar la funcion del modelo de usuario para obtener el avata, es por es  que se llama al user que se obtiene sequelize y asi podeer ejecutar la funcion get en avatar
+    userWithToken.avatar = user.avatar;
     return res.send(userWithToken);
   } catch (e) {
     return res.status(500).json({ message: e.message });
