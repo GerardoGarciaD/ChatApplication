@@ -7,7 +7,7 @@ const AuthService = {
         // Se hace destructuring para obtener solo el objeto data de la respuesta al llamado
         .then(({ data }) => {
           //   Se añade el header de autorization al llamado
-          API.defaults.headers["Authorization"] = `Bearer ${data.token}`;
+          setHeaderAndStorage(data);
           return data;
         })
         .catch((err) => {
@@ -23,7 +23,7 @@ const AuthService = {
         // Se hace destructuring para obtener solo el objeto data de la respuesta al llamado
         .then(({ data }) => {
           //   Se añade el header de autorization al llamado
-          API.defaults.headers["Authorization"] = `Bearer ${data.token}`;
+          setHeaderAndStorage(data);
           return data;
         })
         .catch((err) => {
@@ -35,7 +35,16 @@ const AuthService = {
 
   logout: () => {
     API.defaults.headers["Authorization"] = ``;
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   },
+};
+
+const setHeaderAndStorage = ({ user, token }) => {
+  API.defaults.headers["Authorization"] = `Bearer ${token}`;
+
+  localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("token", token);
 };
 
 export default AuthService;
