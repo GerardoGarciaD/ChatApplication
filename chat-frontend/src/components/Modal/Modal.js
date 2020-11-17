@@ -8,13 +8,27 @@ const Modal = (props) => {
       if (child.key === name) return child;
     });
 
+  const closeModal = (e) => {
+    //   Esto evita la propagacion del evento dropdown dejando a este componente aislado (js bubbling and capturing)
+    e.stopPropagation();
+    if (e.target.classList.contains("modal-close")) {
+      // Esta funcion es la que se manda como propiedad desde el componente Navbar
+      return props.click();
+    }
+  };
+
   return (
-    <div className="modal-mask modal-close">
+    <div className="modal-mask modal-close" onClick={closeModal}>
       <div className="modal-wrapper">
         <div className="modal-container">
           <div className="modal-header">{findByKey("header")}</div>
           <div className="modal-body">{findByKey("body")}</div>
-          <div className="modal-footer">{findByKey("footer")}</div>
+          <div className="modal-footer">
+            <button className="modal-close" onClick={closeModal}>
+              CLOSE
+            </button>
+            {findByKey("footer")}
+          </div>
         </div>
       </div>
     </div>
