@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
     const userWithToken = generateToken(user.get({ raw: true }));
 
     // El userWithToken esta formado por un formato plano, por lo que no puede ejecutar la funcion del modelo de usuario para obtener el avata, es por es  que se llama al user que se obtiene sequelize y asi podeer ejecutar la funcion get en avatar
-    userWithToken.avatar = user.avatar;
+    userWithToken.user.avatar = user.avatar;
     return res.send(userWithToken);
   } catch (e) {
     return res.status(500).json({ message: e.message });
@@ -51,5 +51,5 @@ const generateToken = (user) => {
 
   const token = jwt.sign(user, config.appKey, { expiresIn: 86400 });
 
-  return { ...user, token };
+  return { user, token };
 };
