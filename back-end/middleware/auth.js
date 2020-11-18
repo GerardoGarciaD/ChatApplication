@@ -13,7 +13,7 @@ exports.auth = (req, res, next) => {
   }
 
   //   Se verifica el token con el id guardado en env
-  jwt.verify(token, config.appKey, (errr, user) => {
+  jwt.verify(token, config.appKey, (err, user) => {
     if (err) {
       return res.status(401).json({ err });
     }
