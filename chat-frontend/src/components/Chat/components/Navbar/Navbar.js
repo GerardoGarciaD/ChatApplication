@@ -33,7 +33,7 @@ const Navbar = () => {
       formData.append(key, form[key]);
     }
 
-    //Dispatch
+    //Dispatch al la action
     dispatch(updateProfile(formData)).then(() => setShowProfileModal(false));
   };
   return (
