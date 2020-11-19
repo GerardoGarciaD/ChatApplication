@@ -21,7 +21,8 @@ const Navbar = () => {
 
   const submitForm = (e) => {
     e.preventDefault();
-    const form = { firstName, lastName, email, gender, password, avatar };
+    // Se crea un nuevo objeto con la información que se obtiene de los hooks
+    const form = { firstName, lastName, email, gender, avatar };
 
     //Si el usuario añadió un nuevo password, entonces se añade al nuevo objeto form
     if (password.length > 0) form.password = password;
@@ -30,6 +31,7 @@ const Navbar = () => {
     const formData = new FormData();
 
     for (const key in form) {
+      // Al Formada se le añade el valor de cada una de las key en el objeto form
       formData.append(key, form[key]);
     }
 
