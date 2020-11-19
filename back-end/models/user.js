@@ -27,10 +27,16 @@ module.exports = (sequelize, DataTypes) => {
           const avatar = this.getDataValue("avatar");
           const url = `${config.appUrl}:${config.appPort}`;
 
+          // Si no existe un avatar, entonces se toma una imagen generica del servidor, las que se encuentran en public
           if (!avatar) {
             // Se regresa la ruta en donde se encuentran las imagenes de avatar por default (public)
             return `${url}/${this.getDataValue("gender")}.svg`;
           }
+
+          // Si existe el avatar en la BD, entonces se obtiene el id
+          const id = this.getDataValue("id");
+          // se regresa la ruta en donde se encuentra la imagen de ese usuario
+          return `${url}/user/${id}/${avatar}`;
         },
       },
     },
