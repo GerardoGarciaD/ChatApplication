@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Modal from "../../../Modal/Modal";
 import "./Navbar.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { logout } from "../../../../store/actions/auth";
+import { logout, updateProfile } from "../../../../store/actions/auth";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -23,6 +23,10 @@ const Navbar = () => {
     e.preventDefault();
     const form = { firstName, lastName, email, gender, password, avatar };
 
+    //Si el usuario añadió un nuevo password, entonces se añade al nuevo objeto form
+    if (password.length > 0) form.password = password;
+
+    // Se genera FormData para poder manejar request con imagenes u otros arhivos media
     const formData = new FormData();
 
     for (const key in form) {
@@ -30,6 +34,7 @@ const Navbar = () => {
     }
 
     //Dispatch
+    dispatch(updateProfile(formData)).then(() => setShowProfileModal(false));
   };
   return (
     <div
@@ -121,7 +126,9 @@ const Navbar = () => {
             </Fragment>
 
             <Fragment key="footer">
-              <button className="btn-success">UPDATE</button>
+              <button className="btn-success" onClick={submitForm}>
+                UPDATE
+              </button>
             </Fragment>
           </Modal>
         )}
