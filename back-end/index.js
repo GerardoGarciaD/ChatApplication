@@ -17,8 +17,9 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(router);
 
-// Aqui se indica que imagenes son las que se van a utilizar, para que se puedan acceder a ellas
+// Aqui se indica que imagenes son las que se van a utilizar dentro del servidor , para que se puedan acceder a ellas
 app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname + "/uploads"));
 
 port = config.appPort;
 
