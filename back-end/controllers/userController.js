@@ -2,6 +2,16 @@ const User = require("../models").User;
 const sequelize = require("sequelize");
 
 exports.update = async (req, res) => {
+  // Aqui se verifica si es que existe file en el request, que es generado desde fileUpload
+  if (req.file) {
+    //   si es asi, entonces al body del request se le pone el nombre generado en el archivo fileUpload
+    req.body.avatar = req.file.filename;
+  }
+
+  //   Se verifica si el contenido de avatar del request esta undefined o vacio, esto es para no eliminar de la BD si no hay data en el request
+  if (typeof req.body.avatar !== "undefined" && req.body.avatar.length === 0)
+    delete req.body.avatar;
+
   try {
     //   Se manda a llamar el metodo que Update que se proporciona desde el modelo
     const [rows, result] = await User.update(req.body, {
