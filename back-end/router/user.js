@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { update } = require("../controllers/userController");
 const { auth } = require("../middleware/auth");
-const { rules: updateRules } = require("../validators/auth/register");
+const { rules: updateRules } = require("../validators/user/user");
 const { validate } = require("../validators");
 const { userFile } = require("../middleware/fileUpload");
 
