@@ -33,6 +33,27 @@ const AuthService = {
     );
   },
 
+  updateProfile: (data) => {
+    // Se añaden los headers que se deben añadir para poder realizar el request com archivos media
+    const headers = {
+      headers: { "Content-type": "application/x-www-form-urlencoded" },
+    };
+
+    return (
+      API.post("/users/update", data, headers)
+        // Se hace destructuring para obtener solo el objeto data de la respuesta al llamado
+        .then(({ data }) => {
+          // Se actualiza el objeto user del local storage
+          localStorage.setItem("user", JSON.stringify(data));
+          return data;
+        })
+        .catch((err) => {
+          console.log("Auth service error", err);
+          throw err;
+        })
+    );
+  },
+
   logout: () => {
     API.defaults.headers["Authorization"] = ``;
     localStorage.removeItem("user");
