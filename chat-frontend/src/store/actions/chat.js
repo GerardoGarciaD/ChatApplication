@@ -1,6 +1,7 @@
 const { default: ChatService } = require("../../services/chatService");
 
 export const FETCH_CHATS = "FETCH_CHATS";
+export const SET_CURRENT_CHAT = "SET_CURRENT_CHAT";
 
 export const fetchChats = () => (dispatch) => {
   return ChatService.fetchChats()
@@ -13,8 +14,13 @@ export const fetchChats = () => (dispatch) => {
       });
 
       dispatch({ type: FETCH_CHATS, payload: data });
+      return data;
     })
     .catch((err) => {
       throw err;
     });
+};
+
+export const setCurrentChat = (chat) => (dispatch) => {
+  dispatch({ type: SET_CURRENT_CHAT, payload: chat });
 };
