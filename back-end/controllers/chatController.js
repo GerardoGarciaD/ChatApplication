@@ -36,7 +36,7 @@ exports.index = async (req, res) => {
     ],
   });
 
-  return res.send(user.Chats);
+  return res.json(user.Chats);
 };
 
 exports.create = async (req, res) => {
@@ -116,9 +116,44 @@ exports.create = async (req, res) => {
       ],
     });
 
-    return res.send(chatNew);
+    return res.json(chatNew);
   } catch (e) {
     await t.commit();
     return res.status(500).json({ status: "Error", message: e.message });
   }
+};
+
+exports.messages = async (req, res) => {
+  // Este es el numero máximo de mensajes por paginna
+  const limit = 10;
+  // Aqui se indica que si existe un param query entonces se tome, la pagina por default va a ser 1
+  const page = req.query.page || 1;
+  // El offset va a ser el numero de mensajes que se van a saltar, si la pagina es mayor a 1, entonces se empezarian a mostrar los primeros 20 mensajes (EJEMPLO -> page=2* limiy= 10 -> 20)
+  const offset = page > 1 ? page * limit : 0;
+
+  // Este query nos permite utilizar los metodos count y rows
+  const messages = await Message.findAndCountAll({
+    where: {
+      chatId: req.query.id,
+    },
+    limit,
+    offset,
+  });
+
+  // Se obtiene la cantidad de paginas dependiendo de cuantos mensajes existan
+  const totalPages = Math.ceil(messages.count / limit);
+
+  // Se regresa un array vacio si la pagina mandanda en el param query es mayor al numero total de paginas
+  if (page > totalPages) return res.json({ data: { messages: [] } });
+
+  const result = {
+    // Este metodo es el que se obtiene con findAndCountAll y básicamente son todos los mensajes
+    messages: messages.rows,
+    pagination: {
+      page,
+      totalPages,
+    },
+  };
+
+  return res.json(result);
 };
