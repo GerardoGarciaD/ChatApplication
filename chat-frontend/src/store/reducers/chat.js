@@ -1,4 +1,4 @@
-const { FETCH_CHATS } = require("../actions/chat");
+const { FETCH_CHATS, SET_CURRENT_CHAT } = require("../actions/chat");
 
 const initalState = {
   chats: [],
@@ -15,10 +15,14 @@ const chatReducer = (state = initalState, action) => {
         chats: payload,
       };
 
-    default:
+    case SET_CURRENT_CHAT:
       return {
-        state,
+        ...state,
+        currentChat: payload,
       };
+
+    default:
+      return state;
   }
 };
 
