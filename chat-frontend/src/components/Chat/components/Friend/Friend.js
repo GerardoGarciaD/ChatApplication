@@ -30,7 +30,7 @@ const Friend = ({ chat, click }) => {
         />
         <div className="friend-info">
           <h4 className="m-0">
-            {chat.Users[0].firstName} {chat.Users[0].firstName}
+            {chat.Users[0].firstName} {chat.Users[0].lastName}
           </h4>
           <h5 className="m-0">{lastMessage()}</h5>
         </div>
