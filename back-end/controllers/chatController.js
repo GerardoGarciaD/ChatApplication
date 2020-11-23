@@ -28,6 +28,12 @@ exports.index = async (req, res) => {
           {
             //   Aqui se obtienen los ultimos 20 mensajes
             model: Message,
+            // Se añade el modelo User para asi poder obtener la información del usuario que envió este mensaje y asi poder usarla en el front-end
+            include: [
+              {
+                model: User,
+              },
+            ],
             limit: 20,
             order: [["id", "DESC"]],
           },
@@ -136,6 +142,12 @@ exports.messages = async (req, res) => {
     where: {
       chatId: req.query.id,
     },
+    // Se añade el modelo User para asi poder obtener la información del usuario que envió este mensaje y asi poder usarla en el front-end
+    include: [
+      {
+        model: User,
+      },
+    ],
     limit,
     offset,
   });
