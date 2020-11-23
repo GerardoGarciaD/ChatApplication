@@ -41,13 +41,15 @@ const ChatHeader = ({ chat }) => {
             ></FontAwesomeIcon>
             <p>Add user to chat</p>
           </div>
-          <div>
-            <FontAwesomeIcon
-              icon={["fas", "sign-out-alt"]}
-              className="fa-icon"
-            ></FontAwesomeIcon>
-            <p>Leave chat</p>
-          </div>
+          {chat.type === "group" ? (
+            <div>
+              <FontAwesomeIcon
+                icon={["fas", "sign-out-alt"]}
+                className="fa-icon"
+              ></FontAwesomeIcon>
+              <p>Leave chat</p>
+            </div>
+          ) : null}
           <div>
             <FontAwesomeIcon
               icon={["fas", "trash"]}
