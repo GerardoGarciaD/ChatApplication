@@ -16,11 +16,11 @@ const SocketServer = (server) => {
       // Se verifica si el map de users ya tiene a este usuario
       if (users.has(user.id)) {
         // Se obtiene el usuario del map
-        const existingUser = user.get(user.id);
+        const existingUser = users.get(user.id);
         // se añade a la lista de socket, el socket en donde esta conectado este usuario
         existingUser.sockets = [...existingUser.sockets, ...[socket.id]];
         // Aqui se actualiza el usuario con el nuevo socket en donde esta conectado
-        user.set(user.id, existingUser);
+        users.set(user.id, existingUser);
         // Se actualiza la lista de sockets
         sockets = [...existingUser.sockets, ...[socket.id]];
         // Se agrega al map, el socket donde esta conectado este usuario
@@ -42,7 +42,7 @@ const SocketServer = (server) => {
       // Se notifica a los amigos de este usuario que esta ahora esta conectado
       for (let i = 0; i < chatters.length; i++) {
         if (users.has(chatters[i])) {
-          const chatter = user.get(chatters[i]);
+          const chatter = users.get(chatters[i]);
           chatter.sockets.forEach((socket) => {
             try {
               io.to(socket).emit("online", user);
@@ -62,7 +62,7 @@ const SocketServer = (server) => {
 
     socket.on("disconnect", async () => {
       if (userSockets.has(socket.id)) {
-        const user = user.get(userSockets.get(socket.id));
+        const user = users.get(userSockets.get(socket.id));
         // Si el usuario tiene multimple sesiones activas, se elimina solo en esta en especifico
         if (user.sockets.length > 1) {
           user.sockets = user.sockets.filter((sock) => {
@@ -77,7 +77,7 @@ const SocketServer = (server) => {
           // Se "notifica" a los amigos de este usuario ya no esta conectado
           for (let i = 0; i < chatters.length; i++) {
             if (users.has(chatters[i])) {
-              user.get(chatters[i]).sockets.forEach((socket) => {
+              users.get(chatters[i]).sockets.forEach((socket) => {
                 try {
                   io.to(socket).emit("offline", user);
                 } catch (e) {}
@@ -85,7 +85,7 @@ const SocketServer = (server) => {
             }
           }
           userSockets.delete(socket.id);
-          user.delete(user.id);
+          users.delete(user.id);
         }
       }
     });
