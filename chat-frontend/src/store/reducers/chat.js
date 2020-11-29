@@ -1,4 +1,10 @@
-const { FETCH_CHATS, SET_CURRENT_CHAT } = require("../actions/chat");
+const {
+  FETCH_CHATS,
+  SET_CURRENT_CHAT,
+  FRIENDS_ONLINE,
+  FRIEND_ONLINE,
+  FRIEND_OFFLINE,
+} = require("../actions/chat");
 
 const initalState = {
   chats: [],
@@ -19,6 +25,27 @@ const chatReducer = (state = initalState, action) => {
       return {
         ...state,
         currentChat: payload,
+      };
+
+    case FRIENDS_ONLINE:
+      const chatsCopy = state.chats.map((chat) => {
+        return {
+          ...chat,
+          Users: chat.Users.map((user) => {
+            if (payload.includes(user.id)) {
+              return {
+                ...user,
+                status: "online",
+              };
+            }
+            return user;
+          }),
+        };
+      });
+
+      return {
+        ...state,
+        chats: chatsCopy,
       };
 
     default:
