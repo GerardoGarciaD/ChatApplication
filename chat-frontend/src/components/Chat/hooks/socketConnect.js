@@ -9,9 +9,21 @@ function useSocket(user, dispatch) {
     // Aqui se envía una "alerta" join y se manda el usuario
     socket.emit("join", user);
 
-    // Aqui se recibe una alerte de nombre "typing" desde el servidor y esta se imprime en el navegador
+    // Aqui se recibe una alerta de nombre "typing" desde el servidor y esta se imprime en el navegador
     socket.on("typing", (user) => {
       console.log("Event", user);
+    });
+
+    socket.on("friends", (user) => {
+      console.log("Friends", user);
+    });
+
+    socket.on("online", (user) => {
+      console.log("Online", user);
+    });
+
+    socket.on("offline", (user) => {
+      console.log("Offline", user);
     });
   }, [dispatch]);
 }
