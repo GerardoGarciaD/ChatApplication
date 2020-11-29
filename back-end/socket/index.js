@@ -1,6 +1,9 @@
 const socketIo = require("socket.io");
 const { sequelize } = require("../models");
+// Este  map es donde se van a guardar todos los usuarios que esten conectados en un momento en especifico
 const users = new Map();
+// Este map es donde se va a guardar todos los sockets o "lugares" en donde se encuentra conectado el usuario
+const userSockets = new Map();
 
 const SocketServer = (server) => {
   const io = socketIo(server);
@@ -20,10 +23,14 @@ const SocketServer = (server) => {
         user.set(user.id, existingUser);
         // Se actualiza la lista de sockets
         sockets = [...existingUser.sockets, ...[socket.id]];
+        // Se agrega al map, el socket donde esta conectado este usuario
+        userSockets.set(socket.id, user.id);
       } else {
         // Si no existe el usuario en el map de users, entonce se añade y ademas se añade el socket en donde esta conectado, esto es para poder estar al tanto de todos los dispositivos en donde esta conectado el usuario
         users.set(user.id, { id: user.id, sockets: [socket.id] });
         sockets.push(socket.id);
+        // Se agrega al map, el socket donde esta conectado este usuario
+        userSockets.set(socket.id, user.id);
       }
 
       const onlineFriends = []; //ids
@@ -36,7 +43,7 @@ const SocketServer = (server) => {
       for (let i = 0; i < chatters.length; i++) {
         if (users.has(chatters[i])) {
           const chatter = user.get(chatters[i]);
-          chatters.sockets.forEach((socket) => {
+          chatter.sockets.forEach((socket) => {
             try {
               io.to(socket).emit("online", user);
             } catch (e) {}
@@ -51,6 +58,36 @@ const SocketServer = (server) => {
           io.to(socket).emit("friends", onlineFriends);
         } catch (e) {}
       });
+    });
+
+    socket.on("disconnect", async () => {
+      if (userSockets.has(socket.id)) {
+        const user = user.get(userSockets.get(socket.id));
+        // Si el usuario tiene multimple sesiones activas, se elimina solo en esta en especifico
+        if (user.sockets.length > 1) {
+          user.sockets = user.sockets.filter((sock) => {
+            if (sock !== socket.id) return true;
+
+            userSockets.delete(sock);
+            return false;
+          });
+        } else {
+          const chatters = await getChatters(user.id);
+
+          // Se "notifica" a los amigos de este usuario ya no esta conectado
+          for (let i = 0; i < chatters.length; i++) {
+            if (users.has(chatters[i])) {
+              user.get(chatters[i]).sockets.forEach((socket) => {
+                try {
+                  io.to(socket).emit("offline", user);
+                } catch (e) {}
+              });
+            }
+          }
+          userSockets.delete(socket.id);
+          user.delete(user.id);
+        }
+      }
     });
   });
 };
