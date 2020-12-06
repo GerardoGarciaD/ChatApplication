@@ -1,5 +1,6 @@
 const socketIo = require("socket.io");
 const { sequelize } = require("../models");
+const Message = require("../models").Message;
 // Este  map es donde se van a guardar todos los usuarios que esten conectados en un momento en especifico
 const users = new Map();
 // Este map es donde se va a guardar todos los sockets o "lugares" en donde se encuentra conectado el usuario
@@ -58,6 +59,50 @@ const SocketServer = (server) => {
           io.to(socket).emit("friends", onlineFriends);
         } catch (e) {}
       });
+    });
+
+    socket.on("message", async (message) => {
+      let sockets = [];
+
+      // Se verifica si en el map de users, se encuentra el usuario que  va a mandar el mensaje
+      if (users.has(message.fromUser.id)) {
+        // Se añaden los sockets en los que esta conectado el usuario
+        sockets = users.get(message.fromUser.id).sockets;
+      }
+
+      message.toUserId.forEach((id) => {
+        if (users.has(id)) {
+          // Se añaden los sockets de cada uno de los receptores del mensaje
+          sockets = [...sockets, ...users.get(id).sockets];
+        }
+      });
+
+      // se crea el objeto mensaje
+      try {
+        const msg = {
+          type: message.type,
+          fromUserId: message.fromUser.id,
+          chatId: message.chatId,
+          message: message.message,
+        };
+
+        // Se crea el mensaje con el modelo Messsage
+        await Message.create(msg);
+
+        // Se añade información al objeto message que se recibe como parametro, para que de esta forma tenga la misma estructura de como lo obtenemos mediante el query y asi poder usarlo sin problemas en el front end con react
+        message.User = message.fromUser;
+        message.fromUserId = message.fromUserId.id;
+
+        // se elimina el "atributo" fromUser ya que se añadió message.User y ya no es necesario
+        delete message.fromUser;
+
+        // Se envia un mensaje de recibido por cada socket
+        sockets.forEach((socket) => {
+          io.to(socket).emit("received", message);
+        });
+      } catch (e) {
+        console.log(e);
+      }
     });
 
     socket.on("disconnect", async () => {
