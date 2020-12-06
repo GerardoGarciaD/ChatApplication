@@ -5,6 +5,7 @@ import {
   onlineFriends,
   onlineFriend,
   offlineFriend,
+  setSocket,
 } from "../../../store/actions/chat";
 
 function useSocket(user, dispatch) {
@@ -14,6 +15,8 @@ function useSocket(user, dispatch) {
         console.log(res);
         // Se conecta al servidor para poder usar socket
         const socket = socketIOClient.connect("http://127.0.0.1:3000");
+
+        dispatch(setSocket(socket));
 
         // Aqui se envía una "alerta" join y se manda el usuario
         socket.emit("join", user);
