@@ -4,11 +4,13 @@ const {
   FRIENDS_ONLINE,
   FRIEND_ONLINE,
   FRIEND_OFFLINE,
+  SET_SOCKET,
 } = require("../actions/chat");
 
 const initalState = {
   chats: [],
   currentChat: {},
+  socket: {},
 };
 
 const chatReducer = (state = initalState, action) => {
@@ -113,6 +115,13 @@ const chatReducer = (state = initalState, action) => {
         ...state,
         chats: chatsCopy,
         currentChat: currentChatCopy,
+      };
+    }
+
+    case SET_SOCKET: {
+      return {
+        ...state,
+        socket: payload,
       };
     }
 
