@@ -5,12 +5,15 @@ const {
   FRIEND_ONLINE,
   FRIEND_OFFLINE,
   SET_SOCKET,
+  RECEIVED_MESSAGE,
 } = require("../actions/chat");
 
 const initalState = {
   chats: [],
   currentChat: {},
   socket: {},
+  newMessage: { chatId: null, seen: null },
+  scrollBottom: 0,
 };
 
 const chatReducer = (state = initalState, action) => {
@@ -122,6 +125,57 @@ const chatReducer = (state = initalState, action) => {
       return {
         ...state,
         socket: payload,
+      };
+    }
+
+    case RECEIVED_MESSAGE: {
+      const { userId, message } = payload;
+      let currentChatCopy = { ...state.currentChat };
+      let newMessage = { ...state.newMessage };
+      let scrollBottom = state.scrollBottom;
+
+      const chatsCopy = state.chats.map((chat) => {
+        if (message.chatId === chat.id) {
+          if (message.User.id === userId) {
+            scrollBottom++;
+          } else {
+            newMessage = {
+              chatId: chat.id,
+              seen: false,
+            };
+          }
+
+          if (message.chatId === currentChatCopy.id) {
+            currentChatCopy = {
+              ...currentChatCopy,
+              Messages: [...currentChatCopy.Messages, ...[message]],
+            };
+          }
+
+          return {
+            ...chat,
+            Messages: [...currentChatCopy.Messages, ...[message]],
+          };
+        }
+
+        return chat;
+      });
+
+      if (scrollBottom === state.scrollBottom) {
+        return {
+          ...state,
+          chats: chatsCopy,
+          currentChat: currentChatCopy,
+          newMessage,
+        };
+      }
+
+      return {
+        ...state,
+        chats: chatsCopy,
+        currentChat: currentChatCopy,
+        newMessage,
+        scrollBottom,
       };
     }
 
