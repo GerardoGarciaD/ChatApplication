@@ -5,7 +5,7 @@ import "./MessageInput.scss";
 
 const MessageInput = ({ chat }) => {
   const user = useSelector((state) => state.authReducer.user);
-
+  const socket = useSelector((state) => state.chatReducer.socket);
   const [message, setMessage] = useState("");
   const [image, setImage] = useState("");
 
@@ -28,7 +28,7 @@ const MessageInput = ({ chat }) => {
     const msg = {
       // Se verifica si es que el valor de imageUpload es true, entonces se cambia el tipo de mensaje a image, si no, es texto plano
       type: imageUpload ? "image" : "text",
-      fromUserId: user.id,
+      fromUser: user,
       // Aqui es donde se indica a que usuarios se les va a enviar este mensaje
       toUserId: chat.Users.map((user) => user.id),
       chatId: chat.id,
@@ -40,6 +40,7 @@ const MessageInput = ({ chat }) => {
     setImage("");
 
     // TODO: Send message with socket
+    socket.emit("message", msg);
   };
   return (
     <div id="input-container">
