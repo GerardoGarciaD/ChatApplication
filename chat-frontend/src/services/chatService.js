@@ -10,6 +10,21 @@ const ChatService = {
         throw err;
       });
   },
+
+  uploadImage: (data) => {
+    // Se añaden los headers que se deben añadir para poder realizar el request com archivos media
+
+    const headers = {
+      headers: { "Content-type": "application/x-www-form-urlencoded" },
+    };
+    return API.post("/chats/upload-image", data, headers)
+      .then(({ data }) => {
+        return data.url;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  },
 };
 
 export default ChatService;
