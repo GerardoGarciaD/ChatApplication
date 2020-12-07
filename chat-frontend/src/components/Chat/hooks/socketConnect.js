@@ -7,6 +7,7 @@ import {
   offlineFriend,
   setSocket,
   receivedMessage,
+  senderTyping,
 } from "../../../store/actions/chat";
 
 function useSocket(user, dispatch) {
@@ -22,9 +23,9 @@ function useSocket(user, dispatch) {
         // Aqui se envía una "alerta" join y se manda el usuario
         socket.emit("join", user);
 
-        // Aqui se recibe una alerta de nombre "typing" desde el servidor y esta se imprime en el navegador
-        socket.on("typing", (user) => {
-          console.log("Event", user);
+        // Aqui se recibe una alerta de nombre "typing" desde el servidor y es la que les indica a los demas participantes del chat, que alguien esta escribiendo en el chat
+        socket.on("typing", (sender) => {
+          dispatch(senderTyping(sender));
         });
 
         socket.on("friends", (friends) => {
