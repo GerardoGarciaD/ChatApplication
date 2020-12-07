@@ -6,6 +6,7 @@ const {
   FRIEND_OFFLINE,
   SET_SOCKET,
   RECEIVED_MESSAGE,
+  SENDER_TYPING,
 } = require("../actions/chat");
 
 const initalState = {
@@ -14,6 +15,7 @@ const initalState = {
   socket: {},
   newMessage: { chatId: null, seen: null },
   scrollBottom: 0,
+  senderTyping: { typing: false },
 };
 
 const chatReducer = (state = initalState, action) => {
@@ -169,6 +171,7 @@ const chatReducer = (state = initalState, action) => {
           chats: chatsCopy,
           currentChat: currentChatCopy,
           newMessage,
+          senderTyping: { typing: false },
         };
       }
 
@@ -178,8 +181,23 @@ const chatReducer = (state = initalState, action) => {
         currentChat: currentChatCopy,
         newMessage,
         scrollBottom,
+        senderTyping: { typing: false },
       };
     }
+
+    case SENDER_TYPING:
+      if (payload.typing) {
+        return {
+          ...state,
+          senderTyping: payload,
+          scrollBottom: state.scrollBottom + 1,
+        };
+      }
+
+      return {
+        ...state,
+        senderTyping: payload,
+      };
 
     default:
       return state;
