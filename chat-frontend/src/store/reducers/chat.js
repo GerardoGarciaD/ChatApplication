@@ -71,7 +71,7 @@ const chatReducer = (state = initalState, action) => {
 
         if (chat.id === currentChatCopy.id) {
           currentChatCopy = {
-            currentChatCopy,
+            ...currentChatCopy,
             Users,
           };
         }
@@ -105,7 +105,7 @@ const chatReducer = (state = initalState, action) => {
 
         if (chat.id === currentChatCopy.id) {
           currentChatCopy = {
-            currentChatCopy,
+            ...currentChatCopy,
             Users,
           };
         }
