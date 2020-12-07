@@ -15,6 +15,23 @@ const MessageInput = ({ chat }) => {
     const value = e.target.value;
     setMessage(value);
 
+    // se crea objeto receiver que contiene información sobre que chat, usuario y hacia que usuarios se envia el mensaje
+    const receiver = {
+      chatId: chat.id,
+      fromUser: user,
+      toUserId: chat.Users.map((user) => user.id),
+    };
+
+    if (value.length === 1) {
+      receiver.typing = true;
+      socket.emit("typing", receiver);
+    }
+
+    if (value.length === 0) {
+      receiver.typing = false;
+      socket.emit("typing", receiver);
+    }
+
     // TO DO Notfy other users that this user is typing something
   };
 
