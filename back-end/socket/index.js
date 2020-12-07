@@ -87,12 +87,14 @@ const SocketServer = (server) => {
         };
 
         // Se crea el mensaje con el modelo Messsage
-        const saverdMessage = await Message.create(msg);
+        const savedMessage = await Message.create(msg);
 
         // Se añade información al objeto message que se recibe como parametro, para que de esta forma tenga la misma estructura de como lo obtenemos mediante el query y asi poder usarlo sin problemas en el front end con react
         message.User = message.fromUser;
         message.fromUserId = message.fromUser.id;
-        message.id = saverdMessage.id;
+        message.id = savedMessage.id;
+        // Se manda a llamar message.message para asi poder utilizar el getter que se desarrolló en el Modelo Message
+        message.message = savedMessage.message;
 
         // se elimina el "atributo" fromUser ya que se añadió message.User y ya no es necesario
         delete message.fromUser;
