@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./MessageInput.scss";
+import ChatService from "../../../../services/chatService";
 
 const MessageInput = ({ chat }) => {
   const user = useSelector((state) => state.authReducer.user);
   const socket = useSelector((state) => state.chatReducer.socket);
+  const fileUpload = useRef();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState("");
 
@@ -33,7 +35,7 @@ const MessageInput = ({ chat }) => {
       toUserId: chat.Users.map((user) => user.id),
       chatId: chat.id,
       // Aqui, de igual forma se verifica si el valor de imageUpload es true, para así enviar la image, si no, enviar el texto plano del mensaje
-      message: imageUpload ? image : message,
+      message: imageUpload ? imageUpload : message,
     };
 
     setMessage("");
@@ -42,10 +44,53 @@ const MessageInput = ({ chat }) => {
     // TODO: Send message with socket
     socket.emit("message", msg);
   };
+
+  const handleImageUpload = () => {
+    const formData = new FormData();
+    formData.append("id", chat.id);
+    formData.append("image", image);
+
+    // Chat service
+    ChatService.uploadImage(formData)
+      .then((image) => {
+        sendMessage(image);
+      })
+      .catch((err) => console.log(err));
+  };
   return (
     <div id="input-container">
+      <div id="image-upload-container">
+        <div></div>
+
+        <div id="image-upload">
+          {image.name ? (
+            <div id="image-details">
+              <p className="m-0">{image.name}</p>
+              <FontAwesomeIcon
+                onClick={handleImageUpload}
+                icon="upload"
+                className="fa-icon"
+              ></FontAwesomeIcon>
+
+              <FontAwesomeIcon
+                onClick={() => setImage("")}
+                icon="times"
+                className="fa-icon"
+              ></FontAwesomeIcon>
+            </div>
+          ) : null}
+
+          <FontAwesomeIcon
+            onClick={() => fileUpload.current.click()}
+            icon={["far", "image"]}
+            className="fa-icon"
+          ></FontAwesomeIcon>
+        </div>
+      </div>
+
       <div id="message-input">
         <input
+          value={message}
           type="text"
           placeholder="Message..."
           onChange={(e) => handleMessage(e)}
@@ -57,6 +102,13 @@ const MessageInput = ({ chat }) => {
           className="fa-icon"
         ></FontAwesomeIcon>
       </div>
+
+      <input
+        id="chat-image"
+        ref={fileUpload}
+        type="file"
+        onChange={(e) => setImage(e.target.files[0])}
+      ></input>
     </div>
   );
 };
