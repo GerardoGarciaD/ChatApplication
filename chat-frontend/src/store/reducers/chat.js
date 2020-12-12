@@ -8,6 +8,7 @@ const {
   RECEIVED_MESSAGE,
   SENDER_TYPING,
   PAGINATE_MESSAGES,
+  INCREMENT_SCROLL,
 } = require("../actions/chat");
 
 const initalState = {
@@ -230,6 +231,13 @@ const chatReducer = (state = initalState, action) => {
         currentChat: currentChatCopy,
       };
     }
+
+    case INCREMENT_SCROLL:
+      return {
+        ...state,
+        scrollBottom: state.scrollBottom + 1,
+        newMessage: { chatId: null, seen: true },
+      };
 
     default:
       return state;
