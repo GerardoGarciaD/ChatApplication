@@ -150,6 +150,7 @@ exports.messages = async (req, res) => {
     ],
     limit,
     offset,
+    order: [["id", "DESC"]],
   });
 
   // Se obtiene la cantidad de paginas dependiendo de cuantos mensajes existan
