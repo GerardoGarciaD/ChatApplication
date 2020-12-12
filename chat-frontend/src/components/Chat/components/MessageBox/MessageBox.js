@@ -16,14 +16,6 @@ const MessageBox = ({ chat }) => {
 
   const msgBox = useRef();
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (!senderTyping.typing) {
-        scrollManual(msgBox.current.scrollHeight);
-      }
-    }, 100);
-  }, [scrollBottom]);
-
   const scrollManual = (value) => {
     msgBox.current.scrollTop = value;
   };
@@ -49,21 +41,29 @@ const MessageBox = ({ chat }) => {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+    }, 100);
+  }, [scrollUp]);
+
+  useEffect(() => {
     if (
       senderTyping.typing &&
-      msgBox.current.scrollTop > msgBox.current.scrollHeight * 30
+      msgBox.current.scrollTop > msgBox.current.scrollHeight * 0.3
     ) {
       setTimeout(() => {
-        scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+        scrollManual(msgBox.current.scrollHeight);
       }, 100);
     }
   }, [senderTyping]);
 
   useEffect(() => {
     setTimeout(() => {
-      scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+      if (!senderTyping.typing) {
+        scrollManual(msgBox.current.scrollHeight);
+      }
     }, 100);
-  }, [scrollUp]);
+  }, [scrollBottom]);
 
   return (
     <div onScroll={handleInfiniteScroll} id="msg-box" ref={msgBox}>
