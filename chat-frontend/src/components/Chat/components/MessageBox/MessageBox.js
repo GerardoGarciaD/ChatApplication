@@ -1,18 +1,26 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { paginateMessages } from "../../../../store/actions/chat";
 import Message from "../Message/Message";
 import "./MessageBox.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const MessageBox = ({ chat }) => {
+  const dispatch = useDispatch();
+
   const user = useSelector((state) => state.authReducer.user);
   const scrollBottom = useSelector((state) => state.chatReducer.scrollBottom);
   const senderTyping = useSelector((state) => state.chatReducer.senderTyping);
+  const [loading, setLoading] = useState(false);
+  const [scrollUp, setScrollUp] = useState(0);
 
   const msgBox = useRef();
 
   useEffect(() => {
     setTimeout(() => {
-      scrollManual(msgBox.current.scrollHeight);
+      if (!senderTyping.typing) {
+        scrollManual(msgBox.current.scrollHeight);
+      }
     }, 100);
   }, [scrollBottom]);
 
@@ -20,8 +28,50 @@ const MessageBox = ({ chat }) => {
     msgBox.current.scrollTop = value;
   };
 
+  const handleInfiniteScroll = (e) => {
+    if (e.target.scrollTop === 0) {
+      setLoading(true);
+      const pagination = chat.Pagination;
+      const page = typeof pagination === "undefined" ? 1 : pagination.page;
+
+      dispatch(paginateMessages(chat.id, parseInt(page) + 1))
+        .then((res) => {
+          console.log("Entro al dispatch");
+          if (res) {
+            setScrollUp(scrollUp + 1);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (
+      senderTyping.typing &&
+      msgBox.current.scrollTop > msgBox.current.scrollHeight * 30
+    ) {
+      setTimeout(() => {
+        scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+      }, 100);
+    }
+  }, [senderTyping]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollManual(Math.ceil(msgBox.current.scrollHeight * 0.1));
+    }, 100);
+  }, [scrollUp]);
+
   return (
-    <div id="msg-box" ref={msgBox}>
+    <div onScroll={handleInfiniteScroll} id="msg-box" ref={msgBox}>
+      {loading ? (
+        <p className="loader m-0">
+          <FontAwesomeIcon icon="spinner" className="fa-spin"></FontAwesomeIcon>
+        </p>
+      ) : null}
       {chat.Messages.map((message, index) => {
         return (
           <Message
