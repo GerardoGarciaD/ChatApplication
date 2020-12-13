@@ -11,6 +11,7 @@ const FriendList = () => {
   const dispatch = useDispatch();
   // Se obtienen los chats del state
   const chats = useSelector((state) => state.chatReducer.chats);
+  const socket = useSelector((state) => state.chatReducer.socket);
 
   const [showFriendModal, setShowFriendModal] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -24,7 +25,15 @@ const FriendList = () => {
     ChatService.searchUsers(e.target.value).then((res) => setSuggestions(res));
   };
 
-  const addFriend = (id) => {};
+  const addNewFriend = (id) => {
+    ChatService.createChat(id)
+      .then((chats) => {
+        //emit
+        socket.emit("add-friend", chats);
+        setShowFriendModal(false);
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div id="friends" className="shadow-ligth">
@@ -71,7 +80,7 @@ const FriendList = () => {
                     <p className="m-0">
                       {user.firstName} {user.lastName}
                     </p>
-                    <button onClick={() => addFriend(user.id)}>ADD</button>
+                    <button onClick={() => addNewFriend(user.id)}>ADD</button>
                   </div>
                 );
               })}
