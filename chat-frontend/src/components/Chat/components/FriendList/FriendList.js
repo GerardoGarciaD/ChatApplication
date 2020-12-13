@@ -67,7 +67,7 @@ const FriendList = () => {
             <div id="suggestions">
               {suggestions.map((user) => {
                 return (
-                  <div key="user.id" className="suggestion">
+                  <div key={user.id} className="suggestion">
                     <p className="m-0">
                       {user.firstName} {user.lastName}
                     </p>
