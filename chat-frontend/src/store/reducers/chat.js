@@ -9,6 +9,7 @@ const {
   SENDER_TYPING,
   PAGINATE_MESSAGES,
   INCREMENT_SCROLL,
+  CREATE_CHAT,
 } = require("../actions/chat");
 
 const initalState = {
@@ -237,6 +238,12 @@ const chatReducer = (state = initalState, action) => {
         ...state,
         scrollBottom: state.scrollBottom + 1,
         newMessage: { chatId: null, seen: true },
+      };
+
+    case CREATE_CHAT:
+      return {
+        ...state,
+        chats: [...state.chats, ...[payload]],
       };
 
     default:
