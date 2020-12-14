@@ -66,6 +66,26 @@ const ChatService = {
         throw err;
       });
   },
+
+  addFriendToGroupChat: (userId, chatId) => {
+    return API.post("chats/add-user-to-group", { userId, chatId })
+      .then(({ data }) => {
+        return data;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  },
+
+  leaveCurrentChat: (chatId) => {
+    return API.post("chats/leave-current-chat", { chatId })
+      .then(({ data }) => {
+        return data;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  },
 };
 
 export default ChatService;
