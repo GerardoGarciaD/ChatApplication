@@ -167,6 +167,59 @@ const SocketServer = (server) => {
         }
       } catch (e) {}
     });
+
+    socket.on("add-user-to-group", ({ chat, newChatter }) => {
+      if (users.has(newChatter.id)) {
+        newChatter.status = "online";
+      }
+
+      // old users
+      chat.Users.forEach((user, index) => {
+        if (users.has(user.id)) {
+          chat.Users[index].status = "online";
+          users.get(user.id).sockets.forEach((socket) => {
+            try {
+              io.to(socket).emit("added-user-to-group", {
+                chat,
+                chatters: [newChatter],
+              });
+            } catch (e) {}
+          });
+        }
+      });
+
+      // send to new chatter
+      if (users.has(newChatter.id)) {
+        users.get(newChatter.id).sockets.forEach((socket) => {
+          try {
+            io.to(socket).emit("added-user-to-group", {
+              chat,
+              chatters: chat.Users,
+            });
+          } catch (e) {}
+        });
+      }
+    });
+
+    socket.on("leave-current-chat", (data) => {
+      const { chatId, userId, currentUserId, notifyUsers } = data;
+
+      notifyUsers.forEach((id) => {
+        if (users.has(id)) {
+          users.get(id).sockets.forEach((socket) => {
+            try {
+              io.to(socket).emit("remove-user-from-chat", {
+                chatId,
+                userId,
+                currentUserId,
+              });
+            } catch (err) {
+              console.log(err);
+            }
+          });
+        }
+      });
+    });
   });
 };
 
