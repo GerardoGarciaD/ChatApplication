@@ -10,6 +10,8 @@ const {
   PAGINATE_MESSAGES,
   INCREMENT_SCROLL,
   CREATE_CHAT,
+  ADD_USER_TO_GROUP,
+  LEAVE_CURRENT_CHAT,
 } = require("../actions/chat");
 
 const initalState = {
@@ -245,6 +247,83 @@ const chatReducer = (state = initalState, action) => {
         ...state,
         chats: [...state.chats, ...[payload]],
       };
+
+    case ADD_USER_TO_GROUP: {
+      const { chat, chatters } = payload;
+
+      let exists = false;
+
+      const chatsCopy = state.chats.map((chatState) => {
+        if (chat.id === chatState.id) {
+          exists = true;
+
+          return {
+            ...chatState,
+            Users: [...chatState.Users, ...chatters],
+          };
+        }
+
+        return chatState;
+      });
+
+      if (!exists) chatsCopy.push(chat);
+
+      let currentChatCopy = { ...state.currentChat };
+
+      if (Object.keys(currentChatCopy).length > 0) {
+        if (chat.id === currentChatCopy.id) {
+          currentChatCopy = {
+            ...state.currentChat,
+            Users: [...state.currentChat.Users, ...chatters],
+          };
+        }
+      }
+
+      return {
+        ...state,
+        chats: chatsCopy,
+        currentChat: currentChatCopy,
+      };
+    }
+
+    case LEAVE_CURRENT_CHAT: {
+      const { chatId, userId, currentUserId } = payload;
+
+      if (userId === currentUserId) {
+        const chatsCopy = state.chats.filter((chat) => chat.id !== chatId);
+
+        return {
+          ...state,
+          chats: chatsCopy,
+          currentChat: state.currentChat.id === chatId ? {} : state.currentChat,
+        };
+      } else {
+        const chatsCopy = state.chats.map((chat) => {
+          if (chatId === chat.id) {
+            return {
+              ...chat,
+              Users: chat.Users.filter((user) => user.id !== userId),
+            };
+          }
+
+          return chat;
+        });
+
+        let currentChatCopy = { ...state.currentChat };
+        if (currentChatCopy.id === chatId) {
+          currentChatCopy = {
+            ...currentChatCopy,
+            Users: currentChatCopy.Users.filter((user) => user.id !== userId),
+          };
+        }
+
+        return {
+          ...state,
+          chats: chatsCopy,
+          currentChat: currentChatCopy,
+        };
+      }
+    }
 
     default:
       return state;
