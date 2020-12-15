@@ -12,6 +12,7 @@ const {
   CREATE_CHAT,
   ADD_USER_TO_GROUP,
   LEAVE_CURRENT_CHAT,
+  DELETE_CHAT,
 } = require("../actions/chat");
 
 const initalState = {
@@ -323,6 +324,14 @@ const chatReducer = (state = initalState, action) => {
           currentChat: currentChatCopy,
         };
       }
+    }
+
+    case DELETE_CHAT: {
+      return {
+        ...state,
+        chats: state.chats.filter((chat) => chat.id !== payload),
+        currentChat: state.currentChat.id === payload ? {} : state.currentChat,
+      };
     }
 
     default:
