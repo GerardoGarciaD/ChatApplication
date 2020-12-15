@@ -9,6 +9,8 @@ import {
   receivedMessage,
   senderTyping,
   createChat,
+  leaveCurrentChat,
+  addUserToGroup,
 } from "../../../store/actions/chat";
 
 function useSocket(user, dispatch) {
@@ -50,6 +52,15 @@ function useSocket(user, dispatch) {
 
         socket.on("new-chat", (chat) => {
           dispatch(createChat(chat));
+        });
+
+        socket.on("added-user-to-group", (group) => {
+          dispatch(addUserToGroup(group));
+        });
+
+        socket.on("remove-user-from-chat", (data) => {
+          data.currentUserId = user.id;
+          dispatch(leaveCurrentChat(data));
         });
       })
       .catch((err) => console.log(err));
